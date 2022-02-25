@@ -14,7 +14,19 @@ func printAns(count int, ans [20]byte) {
 	}
 	print("\n")
 }
+
 func main() {
+	Hangman()
+	var guess string
+	print("Play Again?: (Y/N) ")
+	fmt.Scan(&guess)
+	for strings.Contains(guess, "nN") {
+		Hangman()
+		fmt.Scan(&guess)
+	}
+}
+
+func Hangman() {
 	var HangNoose [7]string
 	HangNoose[0] = "--------\n |     |\n       |\n       |\n________"
 	HangNoose[1] = "--------\n |     |\n O     |\n       |\n________"
@@ -22,7 +34,7 @@ func main() {
 	HangNoose[3] = "--------\n |     |\n\\O     |\n |     |\n________"
 	HangNoose[4] = "--------\n |     |\n\\O/    |\n |     |\n________"
 	HangNoose[5] = "--------\n |     |\n\\O/    |\n |     |\n/_______"
-	HangNoose[6] = "--------\n |     |\n\\O/    |\n |     |\n/ \\_____"
+	HangNoose[6] = "--------\n |     |\n\\O/    |\n |     |\n/_\\_____"
 
 	var dict, err = os.ReadFile("Hangman\\hangDict.txt")
 	//println(HangNoose[6])
@@ -35,7 +47,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	index := rand.Intn(len(dict2) - 1)
 	answer := dict2[index]
-	//ansBytes := [20]byte(answer)
+	var ansBytes [20]byte
 	ansLen := len(answer)
 	var guessArray [20]byte
 	//println(ansLen)
@@ -44,6 +56,7 @@ func main() {
 		//print(string(guessArray[i]))
 	}
 	NooseCounter := 0
+	TurnCounter := 0
 	println(HangNoose[NooseCounter])
 	printAns(ansLen, guessArray)
 	for answer[0:ansLen-1] != string(guessArray[:ansLen-1]) {
@@ -53,7 +66,10 @@ func main() {
 		if err != nil {
 			print("Bad boy")
 		}
-
+		for strings.Contains(string(ansBytes[:ansLen-1]), guess) {
+			println("Letter already guess, guess another letter!\n")
+			fmt.Scan(&guess)
+		}
 		if strings.Contains(answer, guess) {
 			for i := 0; i < ansLen; i++ {
 				if (answer[i : i+1]) == guess {
@@ -70,8 +86,10 @@ func main() {
 				return
 			}
 		}
+		ansBytes[TurnCounter] = []byte(guess)[0]
 		println(HangNoose[NooseCounter])
 		printAns(ansLen, guessArray)
+		TurnCounter++
 	}
 	println("Congrats! You got the word right!")
 	return
